@@ -17,5 +17,4 @@ A real-time ticket booking platform with seat locking and booking management.
 - Auto Seat Unlock After Timeout
 - Real-Time Booking Workflow
 
-## Author
-Faraz Tamboli
+
