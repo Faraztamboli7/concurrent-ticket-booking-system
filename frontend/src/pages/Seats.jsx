@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 
-function Seats() {
+function Seats({ eventId }) {
   const [seats, setSeats] = useState([]);
   const [selectedSeat, setSelectedSeat] = useState(null);
 
   useEffect(() => {
-    fetchSeats();
-  }, []);
+    if (eventId) {
+      fetchSeats();
+    }
+  }, [eventId]);
 
   const fetchSeats = async () => {
-    const res = await API.get("/events/1/seats");
-    setSeats(res.data);
+    try {
+      const res = await API.get(`/events/${eventId}/seats`);
+      setSeats(res.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const lockSeat = async (seatId) => {
@@ -34,6 +40,8 @@ function Seats() {
 
       alert("Seat Booked!");
 
+      setSelectedSeat(null);
+
       fetchSeats();
     } catch (error) {
       console.error(error);
@@ -53,19 +61,22 @@ function Seats() {
         <div>🟥 Booked</div>
       </div>
 
-      {/* Seats */}
-      <div className="flex flex-wrap gap-4 justify-center">
+      {/* Seat Grid */}
+      <div className="grid grid-cols-5 gap-4 justify-items-center max-w-md mx-auto">
         {seats.map((seat) => (
           <button
             key={seat.id}
-            onClick={() => lockSeat(seat.id)}
-            className={`w-16 h-16 rounded-lg font-bold text-black shadow-lg transition hover:scale-110
+            onClick={() =>
+              seat.status === "AVAILABLE" && lockSeat(seat.id)
+            }
+            disabled={seat.status !== "AVAILABLE"}
+            className={`w-16 h-16 rounded-lg font-bold text-black shadow-lg transition hover:scale-105
               ${
                 seat.status === "BOOKED"
-                  ? "bg-red-500"
+                  ? "bg-red-500 cursor-not-allowed"
                   : seat.status === "LOCKED"
-                  ? "bg-yellow-400"
-                  : "bg-green-400"
+                  ? "bg-yellow-400 cursor-not-allowed"
+                  : "bg-green-400 hover:bg-green-500"
               }`}
           >
             {seat.seat_number}
