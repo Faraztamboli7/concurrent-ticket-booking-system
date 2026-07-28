@@ -10,11 +10,20 @@ function Events() {
     fetchEvents();
   }, []);
 
-  const fetchEvents = async () => {
-    const res = await API.get("/events");
-    setEvents(res.data);
-  };
+  // const fetchEvents = async () => {
+  //   const res = await API.get("/events");
+  //   setEvents(res.data);
+  // };
 
+  const fetchEvents = async () => {
+  try {
+    const res = await API.get("/events");
+    console.log("Backend events:", res.data);
+    setEvents(res.data);
+  } catch (error) {
+    console.error("Events API error:", error);
+  }
+};
   return (
     <>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

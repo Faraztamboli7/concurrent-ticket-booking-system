@@ -11,18 +11,21 @@ function Seats({ eventId }) {
     }
   }, [eventId]);
 
-  const fetchSeats = async () => {
-    try {
-      const res = await API.get(`/events/${eventId}/seats`);
-      setSeats(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+ const fetchSeats = async () => {
+  try {
+    const res = await API.get(`/events/${eventId}/seats`);
+
+    console.log("Seats from backend:", res.data);
+
+    setSeats(res.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   const lockSeat = async (seatId) => {
     try {
-      await API.post(`/events/${seatId}/lock`);
+      await API.post(`/events/${eventId}/seats/${seatId}/lock`);
 
       setSelectedSeat(seatId);
 
@@ -30,26 +33,29 @@ function Seats({ eventId }) {
 
       fetchSeats();
     } catch (error) {
-      console.error(error);
+      console.error("Lock seat error:", error);
+      alert("Unable to lock seat");
     }
   };
 
   const bookSeat = async (seatId) => {
     try {
-      await API.post(`/events/${seatId}/book`);
+      await API.post(`/events/${eventId}/seats/${seatId}/book`);
 
-      alert("Seat Booked!");
+      alert("Seat Booked Successfully!");
 
       setSelectedSeat(null);
 
       fetchSeats();
     } catch (error) {
-      console.error(error);
+      console.error("Booking error:", error);
+      alert("Unable to book seat");
     }
   };
 
   return (
     <div className="p-8 text-white">
+
       <h1 className="text-4xl font-bold text-center mb-6">
         🎟 Select Your Seat
       </h1>
@@ -87,6 +93,7 @@ function Seats({ eventId }) {
       {/* Selected Seat */}
       {selectedSeat && (
         <div className="bg-slate-800 p-6 rounded-xl mt-8 max-w-md mx-auto text-center">
+
           <h2 className="text-xl font-bold mb-4">
             Selected Seat: {selectedSeat}
           </h2>
@@ -97,8 +104,10 @@ function Seats({ eventId }) {
           >
             Confirm Booking
           </button>
+
         </div>
       )}
+
     </div>
   );
 }
