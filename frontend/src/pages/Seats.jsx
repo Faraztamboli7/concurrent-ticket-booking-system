@@ -23,35 +23,34 @@ function Seats({ eventId }) {
   }
 };
 
-  const lockSeat = async (seatId) => {
-    try {
-      await API.post(`/events/${eventId}/seats/${seatId}/lock`);
+const lockSeat = async (seatId) => {
+  try {
+    const res = await API.post(`/events/${seatId}/lock`);
+    console.log("Lock Success:", res.data);
 
-      setSelectedSeat(seatId);
+    const clickedSeat = seats.find((seat) => seat.id === seatId);
+    setSelectedSeat(clickedSeat);
+    alert("Seat Locked!");
+    fetchSeats();
+  } catch (error) {
+    console.error("Lock Error:", error.response?.data || error.message);
+    alert(error.response?.data?.message || "Unable to lock seat");
+  }
+};
 
-      alert("Seat Locked!");
+const bookSeat = async (seatId) => {
+  try {
+    const res = await API.post(`/events/${seatId}/book`);
+    console.log("Book Success:", res.data);
 
-      fetchSeats();
-    } catch (error) {
-      console.error("Lock seat error:", error);
-      alert("Unable to lock seat");
-    }
-  };
-
-  const bookSeat = async (seatId) => {
-    try {
-      await API.post(`/events/${eventId}/seats/${seatId}/book`);
-
-      alert("Seat Booked Successfully!");
-
-      setSelectedSeat(null);
-
-      fetchSeats();
-    } catch (error) {
-      console.error("Booking error:", error);
-      alert("Unable to book seat");
-    }
-  };
+    alert("Seat Booked!");
+    setSelectedSeat(null);
+    fetchSeats();
+  } catch (error) {
+    console.error("Book Error:", error.response?.data || error.message);
+    alert(error.response?.data?.message || "Unable to book seat");
+  }
+};
 
   return (
     <div className="p-8 text-white">
@@ -95,11 +94,11 @@ function Seats({ eventId }) {
         <div className="bg-slate-800 p-6 rounded-xl mt-8 max-w-md mx-auto text-center">
 
           <h2 className="text-xl font-bold mb-4">
-            Selected Seat: {selectedSeat}
+          Selected Seat: {selectedSeat.seat_number}
           </h2>
 
           <button
-            onClick={() => bookSeat(selectedSeat)}
+            onClick={() => bookSeat(selectedSeat.id)}
             className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg w-full"
           >
             Confirm Booking
